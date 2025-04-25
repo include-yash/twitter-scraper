@@ -1,15 +1,13 @@
 from twikit import Client, TooManyRequests
-from configparser import ConfigParser
 from datetime import datetime
 import time
-from random import randint
+import streamlit as st
 
 async def fetch_tweets(query='gemini', minimum_tweets=10):
-    config = ConfigParser()
-    config.read('config.ini')
-    username = config['X']['username']
-    email = config['X']['email']
-    password = config['X']['password']
+    # Accessing secrets stored in Streamlit
+    username = st.secrets["X"]["username"]
+    email = st.secrets["X"]["email"]
+    password = st.secrets["X"]["password"]
 
     client = Client(language='en-US')
 
