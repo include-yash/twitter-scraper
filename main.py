@@ -6,9 +6,9 @@ from random import randint
 
 async def fetch_tweets(query='gemini', minimum_tweets=10):
     # Access secrets from Streamlit's secrets manager
-    username = st.secrets["credentials"]["username"]
-    email = st.secrets["credentials"]["email"]
-    password = st.secrets["credentials"]["password"]
+    username = st.secrets["X"]["username"]
+    email = st.secrets["X"]["email"]
+    password = st.secrets["X"]["password"]
 
     client = Client(language='en-US')
 
