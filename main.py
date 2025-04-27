@@ -19,12 +19,11 @@ async def fetch_tweets(query='gemini', minimum_tweets=10):
         try:
             await client.get_tweet_detail(tweet_id="20")  # Random public tweet id
         except Unauthorized:
-            await client.login(auth_info_1=username, auth_info_2=email, password=password)
-            client.save_cookies('cookies.json')
-    except Exception:
-        # If cookies don't exist or loading fails, login
-        await client.login(auth_info_1=username, auth_info_2=email, password=password)
-        client.save_cookies('cookies.json')
+            st.warning("Unauthorized: Invalid cookies. Please login manually.")
+            return None  # Exit the function if cookies are invalid
+    except Exception as e:
+        st.warning(f"Error loading cookies: {e}")
+        return None  # Exit if cookies loading fails
 
     tweet_count = 0
     tweets = None
@@ -37,10 +36,6 @@ async def fetch_tweets(query='gemini', minimum_tweets=10):
             wait_time = e.rate_limit_reset - datetime.now().timestamp()
             st.warning(f"Rate limit hit. Waiting {int(wait_time)} seconds...")
             time.sleep(wait_time)
-            continue
-        except Unauthorized:
-            await client.login(auth_info_1=username, auth_info_2=email, password=password)
-            client.save_cookies('cookies.json')
             continue
 
         if not tweets:
