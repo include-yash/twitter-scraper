@@ -14,15 +14,13 @@ async def fetch_tweets(query='gemini', minimum_tweets=10):
     try:
         # Load cookies if available
         client.load_cookies('cookies.json')
-        
-        # Check if cookies are still valid by making a harmless API call
+
+        # Check if cookies are valid: harmless call instead of `client.me()`
         try:
-            await client.me()
+            await client.get_tweet_detail(tweet_id="20")  # Random public tweet id
         except Unauthorized:
-            # If unauthorized, cookies are invalid. Login again.
             await client.login(auth_info_1=username, auth_info_2=email, password=password)
             client.save_cookies('cookies.json')
-            
     except Exception:
         # If cookies don't exist or loading fails, login
         await client.login(auth_info_1=username, auth_info_2=email, password=password)
@@ -37,15 +35,16 @@ async def fetch_tweets(query='gemini', minimum_tweets=10):
             tweets = await client.search_tweet(query, product='Top') if tweets is None else await tweets.next()
         except TooManyRequests as e:
             wait_time = e.rate_limit_reset - datetime.now().timestamp()
+            st.warning(f"Rate limit hit. Waiting {int(wait_time)} seconds...")
             time.sleep(wait_time)
             continue
         except Unauthorized:
-            # In case session expires mid-way (rare but possible)
             await client.login(auth_info_1=username, auth_info_2=email, password=password)
             client.save_cookies('cookies.json')
             continue
 
         if not tweets:
+            st.warning("No more tweets found.")
             break
 
         for tweet in tweets:
