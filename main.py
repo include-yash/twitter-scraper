@@ -15,18 +15,16 @@ async def fetch_tweets(query='gemini', minimum_tweets=10):
         # Load cookies if available
         client.load_cookies('cookies.json')
 
-        # Check if cookies are valid: harmless call instead of `client.me()`
-        try:
-            await client.get_tweet_detail(tweet_id="20")  # Random public tweet id
-        except Unauthorized:
-            st.warning("Unauthorized: Invalid cookies. Please login manually.")
-            return None  # Exit the function if cookies are invalid
+        # If cookies are invalid, this will raise Unauthorized or another exception when fetching tweets
+        tweets = await client.search_tweet(query, product='Top')
+    except Unauthorized:
+        st.warning("Unauthorized: Invalid cookies. Please login manually.")
+        return None  # Exit the function if cookies are invalid
     except Exception as e:
         st.warning(f"Error loading cookies: {e}")
         return None  # Exit if cookies loading fails
 
     tweet_count = 0
-    tweets = None
     results = []
 
     while tweet_count < minimum_tweets:
