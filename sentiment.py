@@ -34,5 +34,5 @@ def predict_sentiment(text: str) -> str:
 
 
 
-# text = "यह मेरी सबसे पसंदीदा किताब है। https://www.youtube.com"
+# text = "its nice terrorist killed people in pehelgaun"
 # print(predict_sentiment(text))
